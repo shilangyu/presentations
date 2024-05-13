@@ -1,0 +1,235 @@
+\documentclass[compress,12pt,xcolor={dvipsnames}]{beamer}
+
+\usepackage{pifont}
+\usepackage{enumitem}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{amssymb}
+\usepackage{color}
+
+\newlist{checklist}{itemize}{2}
+\setlist[checklist]{label=$\square$}
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+\newcommand{\done}{\rlap{$\square$}{\raisebox{2pt}{\large\hspace{1pt}\cmark}}%
+\hspace{-2.5pt}}
+\newcommand{\wontfix}{\rlap{$\square$}{\large\hspace{1pt}\xmark}}
+
+% \addtobeamertemplate{note page}{}{\thispdfpagelabel{notes:\insertframenumber}}
+% \setbeameroption{show notes on second screen}
+
+\graphicspath{ {./assets/} }
+
+\usetheme{Arguelles}
+
+\title{Lossless/Error-tolerant parsers}
+\subtitle{Why and how}
+\event{}
+\date{}
+\author{Marcin Wojnarowski}
+\institute{PL seminars}
+% TODO: Does not work
+% \email{name@domain.com}
+% \homepage{www.mywebsite.com}
+% \github{username}
+
+\input{lstlisting_langs}
+
+% make urls highlighted
+\let\oldhref\href
+\renewcommand{\href}[2]{\oldhref{#1}{\textcolor{magenta}{#2}}}
+
+\begin{document}
+
+\frame[plain]{\titlepage
+	\note[item]{All of this was a result of my analysis-paralysis when creating a parser for my language. It had a requirement that not many languages have: being usable (i.e. good UX) by human beings}
+}
+
+
+\begin{frame}
+	\begin{block}{Lossless}
+		Parser does not discard any information, AST (well, CST) is full-fidelity i.e. we can reconstruct the exact source code.\\\textbf{Not lossless}: discarding whitespace.\note[item]{We wont talk about lexers, distinction between a lexer and parser is unimportant here}
+	\end{block}
+	\begin{block}{Error-tolerant}
+		Parser doesn't bail on errors, AST represents an approximated tree.\\\textbf{Not error-tolerant}: stopping parsing on first error.
+	\end{block}
+\end{frame}
+
+
+\begin{frame}[standout]
+	\centering\large
+	Why
+\end{frame}
+
+\section{Why}
+\begin{frame}
+	\frametitle{Why lossless?}
+
+	\begin{enumerate}
+		\item Sometimes "useless" source code is needed by tools
+		\item Code formatters need whitespace information
+		\item Code transformers (for example quick fixes in IDEs)
+	\end{enumerate}
+
+	From now, information which is conventionally discarded by a parser but we want to keep will be called \textbf{trivia} (most commonly whitespace and comments).
+\end{frame}
+
+\begin{frame}
+	\frametitle{Why error-tolerant?}
+
+	\begin{enumerate}
+		\item Stopping the whole compiler pipeline on the first syntax error is bad UX
+		\item LSPs would be unusable otherwise (for example autocomplete inherently operates on incomplete source code)
+		\item We can raise diagnostics from future compiler-frontend stages
+	\end{enumerate}
+
+	One could wish error-tolerance for other compiler-frontend stages. For example in Rust the borrow checker does not run if the type checker doesn't accept the code.\note[item]{I often fight with the type checker only to end up being completely rejected by the borrow checker}
+\end{frame}
+
+\begin{frame}[standout]
+	\centering\large
+	(Demos)
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Which issues are detected in different compilers?}
+	\begin{lstlisting}[gobble=8,language=typescript,basicstyle=\tt\footnotesize]
+        function func() { return 1; }
+
+        const t: string = func(12 + )
+
+        const a: number = "asd"
+    \end{lstlisting}
+
+	\begin{center}
+		\begin{tabular}{||c| c c c c||}
+			\hline
+			Lang       & No expr    & \#Args     & \texttt{func} type & Expr type  \\
+			\hline\hline
+			Dart       & \checkmark & \checkmark & \checkmark         & \checkmark \\
+			\hline
+			OCaml      & \checkmark & \xmark     & \xmark             & \xmark     \\
+			\hline
+			Scala      & \checkmark & \xmark     & \xmark             & \checkmark \\
+			\hline
+			Swift      & \checkmark & \xmark     & \checkmark         & \checkmark \\
+			\hline
+			TypeScript & \checkmark & \checkmark & \checkmark         & \checkmark \\
+			\hline
+			Rust       & \checkmark & \xmark     & \xmark             & \checkmark \\
+			\hline
+		\end{tabular}
+	\end{center}\note[item]{Possibly overloading of functions makes some compilers not able to produce some more precise errors}
+\end{frame}
+
+\begin{frame}
+	\frametitle{What about their language servers?}
+
+	\begin{itemize}
+		\item \textbf{Dart} -- compiler frontend is a library, used by the LSP
+		\item \textbf{OCaml} -- \href{https://arxiv.org/pdf/1807.06702}{Merlin} is the language server, extends the existing lexer/parser to provide error recovery and incrementality\note[item]{https://arxiv.org/pdf/1807.06702}		\item \textbf{Scala} -- Metals reimplements the syntactic analyzer\note[item]{It might be doing a flycheck like rust, no type feedback is given until a file is saved}
+		\item \textbf{Swift} -- Swift Syntax/IndexStoreDB aim to be the compiler syntactic library, used by LSP but not compiler\note[item]{Compiler is in C++, but libraries in pure Swift}
+		\item \textbf{TypeScript} -- Compiler is usable as a library, used by LSP
+		\item \textbf{Rust} -- LSP reimplements all syntactic features, type checking is dispatched to the compiler binary
+	\end{itemize}
+	\note[item]{Other notable example: Roslyn. A big effort to make C\# and VB compiler a library}
+\end{frame}
+
+\begin{frame}
+	\frametitle{What about their code formatters?}
+
+	\begin{itemize}
+		\item \textbf{Dart} -- Uses compiler libraries
+		\item \textbf{OCaml} -- \texttt{ocamlformat} forks the parser and augments the AST with comments
+		\item \textbf{Scala} -- \texttt{scalafmt} uses scalameta like Metals
+		\item \textbf{Swift} -- \texttt{swift-format} uses Swift Syntax
+		\item \textbf{TypeScript} -- Many formatters available, AFAIK all reimplement the parser
+		\item \textbf{Rust} -- 	\texttt{rustfmt} uses the compiler parser, but due to the AST being lossy authors admit that formatting is only \href{https://github.com/rust-lang/rustfmt/blob/master/Contributing.md\#a-quick-tour-of-rustfmt}{best-effort}
+	\end{itemize}
+
+	\note[item]{Other notable example: Roslyn. A big effort to make C\# and VB compiler a library}
+\end{frame}
+
+
+\section{How}
+
+\begin{frame}[standout]
+	\centering\large
+	How
+\end{frame}
+
+\subsection{ASTs}
+
+\begin{frame}
+	\frametitle{Importance of ASTs}
+	\begin{itemize}
+		\item A good AST is needed to be able to support the lossless/error-resilient parser
+		\item ASTs need to be full-fidelity and be able to represent possibly erroneous parse nodes
+		\item AST nodes need to hold trivia
+		\item Half of the art is in the ASTs
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+	\frametitle{Approach 1: hand-crafted AST}
+	\begin{itemize}
+		\item Usually too subtle and tedious to write by hand, use generators (of AST not parsers!)
+		\item Approach taken by \href{https://github.com/dotnet/roslyn/blob/Visual-Studio-2019-Version-16.11/src/Compilers/CSharp/Portable/Generated/CSharpSyntaxGenerator/CSharpSyntaxGenerator.SourceGenerator/Syntax.xml.Internal.Generated.cs}{Roslyn}
+		      \begin{lstlisting}[language={[Sharp]C}, gobble=12, numbers=off]
+                  RetType MyFunc(ArgType arg) {body}
+              \end{lstlisting}
+		\item Approach taken by \href{https://github.com/apple/swift-syntax/blob/caab6bb82e0e81395551ec1032984f4b325f7a35/Sources/SwiftSyntax/generated/syntaxNodes/SyntaxNodesEF.swift#L3368}{SwiftSyntax}
+		      \begin{lstlisting}[language=Swift, gobble=18, numbers=off]
+                  func myFunc(arg: ArgType) -> RetType {body}
+              \end{lstlisting}
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+	\frametitle{Approach 2: homogenous AST}
+	\begin{itemize}
+		\item Using an untyped syntax tree as base
+		\item Providing a typed view into the syntax tree
+		\item Less obvious how to safely construct AST nodes
+		\item Can be reused for various languages
+		\item Approach taken by \href{https://github.com/rust-lang/rust-analyzer/blob/5bf2f85c8054d80424899fa581db1b192230efb5/crates/syntax/src/ast/generated/nodes.rs#L357}{Rust analyzer}
+		      \begin{lstlisting}[language=Rust, gobble=18, numbers=off]
+                  fn my_func(arg: ArgType) -> RetType {body}
+              \end{lstlisting}
+	\end{itemize}
+\end{frame}
+
+
+% \begin{frame}
+% 	\frametitle{Editing the syntax tree?}
+%
+% \end{frame}
+
+% TODO: green/red tree
+
+
+\section{Conclusions}
+
+\begin{frame}
+	\frametitle{Conclusions}
+	\begin{itemize}
+		\item Properties of a parser often leak into the design of the AST
+		\item A lossless/error-resilient parser makes the compiler frontend usable as a library
+		\item Error recovery is best when specialized to the semantics of the language
+	\end{itemize}
+\end{frame}
+
+\End
+\begin{frame}
+	\frametitle{Incremental parsers?}
+
+	Some parser are written to be incremental, i.e. we can reparse only some bounded piece of code of the changed fragment instead of the whole file.
+
+	This complicates the parser and the benefits are unclear\note[item]{A good example is the contextual keyword "await", when adding async somewhere higher up the tree, "await" changes its meaning}. Usually parsing is fast enough to reparse the whole file from scratch.
+\end{frame}
+% https://github.com/leanprover/lean4/blob/26a1b934c226c6aa923248804ba92c23f56c5115/src/Lean/Parser/Basic.lean#L10
+% https://github.com/leanprover/lean4/blob/26a1b934c226c6aa923248804ba92c23f56c5115/src/Init/Prelude.lean#L3674
+\end{document}
