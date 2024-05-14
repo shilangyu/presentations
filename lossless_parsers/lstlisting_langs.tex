@@ -5,13 +5,6 @@
 \definecolor{sortcolor}{rgb}{0.1, 0.5, 0.1}      % green
 \definecolor{attributecolor}{rgb}{0.7, 0.1, 0.1} % red
 
-\lstdefinelanguage{Oop}{
-	keywords={func, class, extends, var, throw, if, self, return, override, constructor},
-	ndkeywords={true, false},
-	sensitive=false,
-	comment=[l]{\#},
-}
-
 \lstdefinelanguage{typescript}{
 	keywords={type, function, if, else, typeof, satisfies, const, return},
 	ndkeywords={true, false},
@@ -27,35 +20,11 @@
 	comment=[l]{//},
 }
 
-\lstdefinelanguage{TypeState}{
-	keywords={func, class, typestate, transition_to, when, with},
-	emph={int, string},
-	sensitive=false,
-	comment=[l]{\#},
-}
-
-\lstdefinelanguage{Koka}{
-	keywords={effect, ctl, fun, val, var, return, if, handler, then},
-	emph={bool, False, True, println},
-	sensitive=false,
-	comment=[l]{\#},
-}
-
 \lstdefinelanguage{Dart}{
 	keywords={class, if, else},
 	emph={int, string, void, print},
 	sensitive=false,
 	comment=[l]{//},
-}
-
-\lstdefinelanguage{Kotlin}{
-	comment=[l]{//},
-	emph={filter, first, firstOrNull, forEach, lazy, map, mapNotNull, println},
-	keywords={!in, !is, abstract, actual, annotation, as, as?, break, by, catch, class, companion, const, constructor, continue, crossinline, data, delegate, do, dynamic, else, enum, expect, external, false, field, file, final, finally, for, fun, get, if, import, in, infix, init, inline, inner, interface, internal, is, lateinit, noinline, null, object, open, operator, out, override, package, param, private, property, protected, public, receiveris, reified, return, return@, sealed, set, setparam, super, suspend, tailrec, this, throw, true, try, typealias, typeof, val, var, vararg, when, where, while},
-	morecomment=[s]{/*}{*/},
-	morestring=[b]",
-	morestring=[s]{"""*}{*"""},
-	ndkeywords={@Deprecated, @JvmField, @JvmName, @JvmOverloads, @JvmStatic, @JvmSynthetic, Array, Byte, Double, Float, Int, Integer, Iterable, Long, Runnable, Short, String, Any, Unit, Nothing},
 }
 
 \lstdefinelanguage{Rust}{%
