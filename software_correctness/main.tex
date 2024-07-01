@@ -7,6 +7,7 @@
 \usepackage{listings}
 \usepackage{amssymb}
 \usepackage{color}
+\usepackage{scalerel,xparse}
 
 \newlist{checklist}{itemize}{2}
 \setlist[checklist]{label=$\square$}
@@ -20,6 +21,11 @@
 % \setbeameroption{show notes on second screen}
 
 \graphicspath{ {./assets/} }
+\NewDocumentCommand\emojicamel{}{
+    \scalerel*{
+        \includegraphics{camel_emoji.png}
+    }{X}
+}
 
 \usetheme{Arguelles}
 
@@ -28,22 +34,37 @@
 \event{}
 \date{}
 \author{Marcin Wojnarowski}
-\institute{LeanCode}
+\institute{Fluttercon 2024}
 % TODO: Does not work
 % \email{name@domain.com}
-% \homepage{www.mywebsite.com}
-% \github{username}
+\homepage{shilangyu.dev}
+\github{shilangyu}
 
 \input{lstlisting_langs}
 
 \begin{document}
 
-\frame[plain]{\titlepage}
+\frame[plain]{\titlepage
+
+    \note[item]{The goal of the presentation is to expose you to topics that appear casually in academia, but are not often discussed in the industry.}
+}
+
+
+\begin{frame}
+    \frametitle{Who is me?}
+    \framesubtitle{\includegraphics[width=0.35\textwidth]{leancode_logo.png}}
+
+    \begin{enumerate}
+        \item Senior developer at LeanCode (now technically an intern)
+        \item Connected to the academic and industry worlds
+        \item Interested in programming language theory
+    \end{enumerate}
+\end{frame}
 
 
 \begin{frame}
     \begin{block}{Disclaimer 1}
-        Many simplifications are made to make this presentation digestible.
+        Many simplifications have been done to make this presentation digestible.
     \end{block}
     \begin{alertblock}{Disclaimer 2}
         Presentation contains potentially controversial opinions. Those will be annotated with a red label like this disclaimer.
@@ -51,7 +72,7 @@
     \begin{block}{Disclaimer 3}
         Interrupt me if something isn't clear. Unless it is to fight a controversial opinion that was presented, leave this for after the presentation.
     \end{block}
-    \note[item]{Used to be Polish, but the amount of jargon made switching between Polish/English awkward}
+    \note[item]{Disclaimer 3: what a convenient way for me to avoid public humiliation.}
     \note[item]{Many languages will appear, don't get too comfortable.}
 \end{frame}
 
