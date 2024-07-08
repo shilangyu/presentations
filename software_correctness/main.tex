@@ -43,7 +43,7 @@
 
 \begin{frame}
     \begin{block}{Disclaimer 1}
-        Many simplifications are made to make this presentation digestible.
+        Many simplifications have been done to make this presentation digestible.
     \end{block}
     \begin{alertblock}{Disclaimer 2}
         Presentation contains potentially controversial opinions. Those will be annotated with a red label like this disclaimer.
@@ -51,7 +51,7 @@
     \begin{block}{Disclaimer 3}
         Interrupt me if something isn't clear. Unless it is to fight a controversial opinion that was presented, leave this for after the presentation.
     \end{block}
-    \note[item]{Used to be Polish, but the amount of jargon made switching between Polish/English awkward}
+    \note[item]{Disclaimer 3: what a convenient way for me to avoid public humiliation.}
     \note[item]{Many languages will appear, don't get too comfortable.}
 \end{frame}
 
@@ -207,7 +207,7 @@
         Exceptions are bad at modelling errors. \note[itemize]{
             \item expensive to implement
             \item require reasoning across functions (non local)
-            \item fundamental thus hard to use when integrating with other languages
+            \item fundamental thus annoying to use when integrating with other languages
         } Unchecked exceptions are even worse. \note[itemize]{
             \item its not part of the API, makes internal changes possibly breaking changes
             \item zero clue what can actually go wrong
@@ -226,7 +226,7 @@
 
     \begin{itemize}
         \item Java's checked exceptions
-        \item Haskell's Monads
+        \item Haskell's Monads \note[item]{Just a monoid in the category of endofunctors}
         \item OCaml's effect handlers
     \end{itemize}
 \end{frame}
@@ -279,8 +279,8 @@
         \item Koka is a research language from Microsoft Research
         \item It tries to make effect handlers ergonomic and efficient (effect handlers are usually expensive)
         \item Modeling code using algebraic effect handlers is a pure pleasure
-        \item We strip the \texttt{wh} effect from the block
-        \item We cannot call \texttt{brek} anywhere, there needs to be a handler
+        \item We strip the \texttt{loop-flow} effect from the block
+        \item We cannot call \texttt{break} anywhere, there needs to be a handler
         \item You can even break from a different stack point
         \item \texttt{div} is an effect, unlike in Haskell
     }
