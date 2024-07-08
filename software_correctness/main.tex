@@ -33,7 +33,7 @@
 \subtitle{We can and know how to do better}
 \event{}
 \date{}
-\author{Marcin Wojnarowski}
+\author{Marcin Wojnarowski \emojicamel}
 \institute{Fluttercon 2024}
 % TODO: Does not work
 % \email{name@domain.com}
@@ -45,8 +45,10 @@
 \begin{document}
 
 \frame[plain]{\titlepage
-
-    \note[item]{The goal of the presentation is to expose you to topics that appear casually in academia, but are not often discussed in the industry.}
+    \note[itemize]{
+        \item The goal of the presentation is to expose you to topics that appear casually in academia, but are not often discussed in the industry.
+        \item This talk will be very different from all other ones, there will be no Dart nor Flutter.
+        \item Not sure why this talk was accepted for the conference.}
 }
 
 
@@ -228,7 +230,7 @@
         Exceptions are bad at modelling errors. \note[itemize]{
             \item expensive to implement
             \item require reasoning across functions (non local)
-            \item fundamental thus hard to use when integrating with other languages
+            \item fundamental thus annoying to use when integrating with other languages
         } Unchecked exceptions are even worse. \note[itemize]{
             \item its not part of the API, makes internal changes possibly breaking changes
             \item zero clue what can actually go wrong
@@ -247,7 +249,7 @@
 
     \begin{itemize}
         \item Java's checked exceptions
-        \item Haskell's Monads
+        \item Haskell's Monads \note[item]{Just a monoid in the category of endofunctors}
         \item OCaml's effect handlers
     \end{itemize}
 \end{frame}
@@ -300,8 +302,8 @@
         \item Koka is a research language from Microsoft Research
         \item It tries to make effect handlers ergonomic and efficient (effect handlers are usually expensive)
         \item Modeling code using algebraic effect handlers is a pure pleasure
-        \item We strip the \texttt{wh} effect from the block
-        \item We cannot call \texttt{brek} anywhere, there needs to be a handler
+        \item We strip the \texttt{loop-flow} effect from the block
+        \item We cannot call \texttt{break} anywhere, there needs to be a handler
         \item You can even break from a different stack point
         \item \texttt{div} is an effect, unlike in Haskell
     }
@@ -349,6 +351,7 @@
           )
     \end{lstlisting}
     \note[item]{Give a formal guarantee at each point in code that the list is not empty}
+    \note[item]{The word "proof" will appear more often now. A proof is a formal guarantee that a certain property holds.}
 \end{frame}
 
 \begin{frame}[fragile]
@@ -558,35 +561,35 @@
     \end{lstlisting}\note[item]{Constructors kinda exist like in a typestate}
 \end{frame}
 
-\begin{frame}[fragile]{Simulating typestate in types}
-    \begin{lstlisting}[language=Rust,gobble=8]
-        enum FileState {
-            Uninitialized, Initialized, Opened
-        }
+% \begin{frame}[fragile]{Simulating typestate in types}
+%     \begin{lstlisting}[language=Rust,gobble=8]
+%         enum FileState {
+%             Uninitialized, Initialized, Opened
+%         }
 
-        struct File<S: FileState> {}
+%         struct File<S: FileState> {}
 
-        impl<S: FileState> File<S> {
-            fn new() -> File<Uninitialized>;
-        }
+%         impl<S: FileState> File<S> {
+%             fn new() -> File<Uninitialized>;
+%         }
 
-        impl File<Opened> {
-            fn read(&self) -> String;
-        }
+%         impl File<Opened> {
+%             fn read(&self) -> String;
+%         }
 
-        impl File<Initialized> {
-            fn open(self) -> File<Opened>;
-        }
-        // etc
-    \end{lstlisting}
-    \note[itemize]{
-        \item In Rust its ok-ish because we can implement methods for specific types rather than whole classes
-        \item Ownership in rust also helps (when changing state we consume ownership)
-        \item Annoying in languages where we cannot shadow, as we will be often reassigning
-        \item Not usable if this variable has to be shared
-        \item Takeaway: use this pattern only when possible, File is a good candidate
-    }
-\end{frame}
+%         impl File<Initialized> {
+%             fn open(self) -> File<Opened>;
+%         }
+%         // etc
+%     \end{lstlisting}
+%     \note[itemize]{
+%         \item In Rust its ok-ish because we can implement methods for specific types rather than whole classes
+%         \item Ownership in rust also helps (when changing state we consume ownership)
+%         \item Annoying in languages where we cannot shadow, as we will be often reassigning
+%         \item Not usable if this variable has to be shared
+%         \item Takeaway: use this pattern only when possible, File is a good candidate
+%     }
+% \end{frame}
 
 \section{Proof assistants}
 
@@ -610,35 +613,35 @@
         \item First breakthrough is proving the \textit{four color theorem}
               \begin{center} \includegraphics[width=0.3\textwidth]{map_coloring.png} \end{center}
         \item Recently some mathematicians picked up proof assistants
-        \item Kevin Buzzard teaches using proof assistants at Imperial College
+              % \item Kevin Buzzard teaches using proof assistants at Imperial College
         \item Terrence Tao uses it to formalize his papers \\
               $\to$ recently he found a mistake in his paper!
     \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{Example proof}
-    \begin{theorem}
-        The product of two even numbers is even.
-    \end{theorem}
+% \begin{frame}[fragile]{Example proof}
+%     \begin{theorem}
+%         The product of two even numbers is even.
+%     \end{theorem}
 
-    \begin{proof}
-        Let $a$, $b$ be two even numbers. So there exist $r$, $s$ such that $a = 2r$ and $b = 2s$. Therefore
-        \begin{align}
-            a \cdot b & = (2r)(2s)                  \\
-                      & = 2 \cdot 2 \cdot r \cdot s \\
-                      & = 4rs
-        \end{align}
-        So $a \cdot b$ is even because $\frac{4rs}{2} = 2rs$ which is a whole number.
-    \end{proof}\note[itemize]{
-        \item So many assumptions. CROWD: do you see any assumption?
-        \item We need a "type system" to verify our proofs are correct
-    }
-\end{frame}
+%     \begin{proof}
+%         Let $a$, $b$ be two even numbers. So there exist $r$, $s$ such that $a = 2r$ and $b = 2s$. Therefore
+%         \begin{align}
+%             a \cdot b & = (2r)(2s)                  \\
+%                       & = 2 \cdot 2 \cdot r \cdot s \\
+%                       & = 4rs
+%         \end{align}
+%         So $a \cdot b$ is even because $\frac{4rs}{2} = 2rs$ which is a whole number.
+%     \end{proof}\note[itemize]{
+%         \item So many assumptions. CROWD: do you see any assumption?
+%         \item We need a "type system" to verify our proofs are correct
+%     }
+% \end{frame}
 
 \begin{frame}{Programs are proofs}
-    Turns out you can use programs as proofs (Curry–Howard correspondence). And you can reason about program using proofs. So you can reason about programs using programs.
+    Turns out you can use programs as proofs (Curry-Howard correspondence). And you can reason about program using proofs. So you can reason about programs using programs.
 
-    Proofs are nothing more than a program that is type checked.
+    Proofs are nothing more than a program that is type checked. \note[item]{For example, in Dart if you have a variable with value 5 and type int, then you have a proof that 5 is an int.}
 \end{frame}
 
 \begin{frame}
@@ -665,9 +668,9 @@
     Only AI can save us.
 \end{frame}
 
-\begin{frame}[plain]
-    \centering
-    \includegraphics[height=\textheight]{url_can_parse.png}
-\end{frame}
+% \begin{frame}[plain]
+%     \centering
+%     \includegraphics[height=\textheight]{url_can_parse.png}
+% \end{frame}
 
 \end{document}
