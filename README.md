@@ -9,3 +9,7 @@ Talk about aspects of software correctness and ideas around type safety.
 ## [Lossless and error-resilient parsers](./lossless_parsers)
 
 Talk about the importance, case studies, and implementation of parsers that are lossless and error-resilient.
+
+## [Rust](./rust)
+
+Talk introducing Rust and its benefits.
