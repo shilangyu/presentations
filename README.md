@@ -15,3 +15,9 @@ Talk about the importance, case studies, and implementation of parsers that are 
 ## [Rust](./rust)
 
 Talk introducing Rust and its benefits.
+
+## Presentation events in BLoC
+
+(slides lost in the ether)
+
+The Fluttercon talk can be found on [YouTube](https://www.youtube.com/watch?v=X4FFYqNr9Jc).
